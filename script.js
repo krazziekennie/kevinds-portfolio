@@ -55,6 +55,19 @@
   requestAnimationFrame(loop);
 })();
 
+// ===== Security hardening =====
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if (e.key === 'F12') e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) e.preventDefault();
+  if (e.ctrlKey && e.key === 'u') e.preventDefault();
+  if (e.ctrlKey && e.key === 's') e.preventDefault();
+});
+document.addEventListener('dragstart', e => e.preventDefault());
+document.addEventListener('selectstart', e => {
+  if (!e.target.closest('input, textarea')) e.preventDefault();
+});
+
 // ===== Custom cursor =====
 const cursor = document.getElementById('cursor');
 const follower = document.getElementById('cursorFollower');
