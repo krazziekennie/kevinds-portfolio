@@ -276,6 +276,63 @@ new MutationObserver((mutations, obs) => {
   if (badge) { badge.remove(); obs.disconnect(); }
 }).observe(document.body, { childList: true, subtree: true });
 
+// ===== Back to top button =====
+const backToTop = document.getElementById('backToTop');
+if (backToTop) {
+  window.addEventListener('scroll', () => {
+    backToTop.classList.toggle('visible', window.scrollY > 500);
+  }, { passive: true });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// ===== Freelance badge =====
+const freelanceBadge = document.getElementById('freelanceBadge');
+if (freelanceBadge) {
+  const heroEl = document.getElementById('home');
+  if (heroEl) {
+    window.addEventListener('scroll', () => {
+      freelanceBadge.classList.toggle('visible', window.scrollY > heroEl.offsetHeight);
+    }, { passive: true });
+  }
+}
+
+// ===== Section dots navigation =====
+const sectionDots = document.getElementById('sectionDots');
+if (sectionDots) {
+  const dotLinks = sectionDots.querySelectorAll('.dot-link');
+  const sectionIds = Array.from(dotLinks).map(d => d.dataset.section);
+  const dotSections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+  const dotObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        dotLinks.forEach(d => d.classList.remove('active'));
+        const match = sectionDots.querySelector(`[data-section="${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -40% 0px' });
+  dotSections.forEach(s => dotObserver.observe(s));
+}
+
+// ===== Service card reveal =====
+const serviceCards = document.querySelectorAll('.service');
+if (serviceCards.length) {
+  const serviceObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        serviceObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  serviceCards.forEach((card, i) => {
+    card.style.transitionDelay = `${i * 0.12}s`;
+    serviceObserver.observe(card);
+  });
+}
+
 // ===== Contact form (Formspree AJAX) =====
 const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
