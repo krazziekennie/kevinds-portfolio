@@ -1,3 +1,81 @@
+// ===== Sound Engine (Web Audio API) =====
+const SFX = (() => {
+  let ctx;
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return ctx;
+  }
+
+  function whoosh(duration = 1.5) {
+    const c = getCtx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    const filter = c.createBiquadFilter();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, c.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, c.currentTime + duration * 0.7);
+    osc.frequency.exponentialRampToValueAtTime(100, c.currentTime + duration);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(200, c.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(3000, c.currentTime + duration * 0.6);
+    filter.frequency.exponentialRampToValueAtTime(400, c.currentTime + duration);
+    gain.gain.setValueAtTime(0, c.currentTime);
+    gain.gain.linearRampToValueAtTime(0.06, c.currentTime + 0.1);
+    gain.gain.linearRampToValueAtTime(0.04, c.currentTime + duration * 0.8);
+    gain.gain.linearRampToValueAtTime(0, c.currentTime + duration);
+    osc.connect(filter).connect(gain).connect(c.destination);
+    osc.start(c.currentTime);
+    osc.stop(c.currentTime + duration);
+  }
+
+  function chime() {
+    const c = getCtx();
+    const freqs = [880, 1108.73, 1318.51, 1760];
+    freqs.forEach((f, i) => {
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      const t = c.currentTime + i * 0.08;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.08, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+      osc.connect(gain).connect(c.destination);
+      osc.start(t);
+      osc.stop(t + 0.8);
+    });
+  }
+
+  function click() {
+    const c = getCtx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, c.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.06);
+    gain.gain.setValueAtTime(0.05, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.06);
+    osc.connect(gain).connect(c.destination);
+    osc.start(c.currentTime);
+    osc.stop(c.currentTime + 0.06);
+  }
+
+  function hover() {
+    const c = getCtx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 2400;
+    gain.gain.setValueAtTime(0.02, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.04);
+    osc.connect(gain).connect(c.destination);
+    osc.start(c.currentTime);
+    osc.stop(c.currentTime + 0.04);
+  }
+
+  return { whoosh, chime, click, hover };
+})();
+
 // ===== Preloader =====
 (function () {
   document.body.classList.add('loading');
@@ -10,6 +88,7 @@
   let current = 0;
   let target = 0;
   let done = false;
+  let whooshPlayed = false;
 
   function loop() {
     if (current < target) {
@@ -18,6 +97,10 @@
       const val = Math.round(current);
       if (counterEl) counterEl.textContent = val;
       if (fillBar) fillBar.style.width = val + '%';
+      if (val > 10 && !whooshPlayed) {
+        whooshPlayed = true;
+        try { SFX.whoosh(2); } catch(e) {}
+      }
     }
     if (!done || current < 100) requestAnimationFrame(loop);
     else exit();
@@ -38,6 +121,7 @@
   function exit() {
     if (counterEl) counterEl.textContent = '100';
     if (fillBar) fillBar.style.width = '100%';
+    try { SFX.chime(); } catch(e) {}
     setTimeout(() => {
       preloader?.classList.add('exit');
       document.body.classList.remove('loading');
@@ -89,10 +173,17 @@ if (window.matchMedia('(pointer: fine)').matches) {
   animateFollower();
 
   document.querySelectorAll('a, button, .work-item, .service').forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+    el.addEventListener('mouseenter', () => { cursor.classList.add('grow'); try { SFX.hover(); } catch(e) {} });
     el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
   });
 }
+
+// ===== Click sounds =====
+document.addEventListener('click', e => {
+  if (e.target.closest('a, button, .work-item, .dot-link, .nav-link, .mobile-links a')) {
+    try { SFX.click(); } catch(e2) {}
+  }
+});
 
 // ===== Nav scroll state + progress =====
 const nav = document.getElementById('nav');
