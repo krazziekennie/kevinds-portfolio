@@ -10,12 +10,10 @@
   let current = 0;
   let target = 0;
   let done = false;
-  const MIN_DURATION = 1800;
-  const startTime = Date.now();
 
   function loop() {
     if (current < target) {
-      current += Math.max(0.5, (target - current) * 0.06);
+      current += Math.max(1, (target - current) * 0.18);
       if (current > target) current = target;
       const val = Math.round(current);
       if (counterEl) counterEl.textContent = val;
@@ -38,17 +36,13 @@
   }
 
   function exit() {
-    const elapsed = Date.now() - startTime;
-    const remaining = Math.max(0, MIN_DURATION - elapsed);
+    if (counterEl) counterEl.textContent = '100';
+    if (fillBar) fillBar.style.width = '100%';
     setTimeout(() => {
-      if (counterEl) counterEl.textContent = '100';
-      if (fillBar) fillBar.style.width = '100%';
-      setTimeout(() => {
-        preloader?.classList.add('exit');
-        document.body.classList.remove('loading');
-        setTimeout(() => preloader?.classList.add('gone'), 1200);
-      }, 300);
-    }, remaining);
+      preloader?.classList.add('exit');
+      document.body.classList.remove('loading');
+      setTimeout(() => preloader?.classList.add('gone'), 1000);
+    }, 200);
   }
 
   images.forEach(img => {
@@ -57,7 +51,7 @@
   });
 
   if (images.length === 0) { done = true; target = 100; }
-  setTimeout(complete, 4000);
+  setTimeout(complete, 3000);
   requestAnimationFrame(loop);
 })();
 
