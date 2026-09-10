@@ -263,6 +263,12 @@ document.querySelectorAll('.client').forEach(client => {
   });
 })();
 
+// ===== Remove Netlify badge =====
+new MutationObserver((mutations, obs) => {
+  const badge = document.querySelector('[data-netlify-site-id], .netlify-badge, [class*="netlify"]');
+  if (badge) { badge.remove(); obs.disconnect(); }
+}).observe(document.body, { childList: true, subtree: true });
+
 // ===== Contact form (Formspree AJAX) =====
 const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
