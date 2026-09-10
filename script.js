@@ -1,3 +1,45 @@
+// ===== Preloader =====
+(function () {
+  document.body.classList.add('loading');
+  const preloader = document.getElementById('preloader');
+  const fill = document.getElementById('preloaderFill');
+  const statusEl = document.getElementById('preloaderStatus');
+  const videos = document.querySelectorAll('video');
+  const images = document.querySelectorAll('img');
+  const total = videos.length + images.length;
+  let loaded = 0;
+
+  function tick() {
+    loaded++;
+    const pct = Math.min(Math.round((loaded / total) * 100), 100);
+    if (fill) fill.style.width = pct + '%';
+    if (statusEl) statusEl.textContent = pct + '%';
+    if (loaded >= total) finish();
+  }
+
+  function finish() {
+    if (fill) fill.style.width = '100%';
+    if (statusEl) statusEl.textContent = 'Ready';
+    setTimeout(() => {
+      preloader?.classList.add('done');
+      document.body.classList.remove('loading');
+    }, 400);
+  }
+
+  images.forEach(img => {
+    if (img.complete) tick();
+    else { img.addEventListener('load', tick); img.addEventListener('error', tick); }
+  });
+
+  videos.forEach(vid => {
+    if (vid.readyState >= 3) tick();
+    else { vid.addEventListener('canplay', tick, { once: true }); vid.addEventListener('error', tick, { once: true }); }
+  });
+
+  if (total === 0) finish();
+  setTimeout(finish, 6000);
+})();
+
 // ===== Custom cursor =====
 const cursor = document.getElementById('cursor');
 const follower = document.getElementById('cursorFollower');
