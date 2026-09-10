@@ -2,55 +2,53 @@
 (function () {
   document.body.classList.add('loading');
   const preloader = document.getElementById('preloader');
-  const fill = document.getElementById('preloaderFill');
-  const counter = document.getElementById('preCounter');
-  const videos = document.querySelectorAll('video');
-  const images = document.querySelectorAll('img');
-  const total = videos.length + images.length;
+  const fillBar = document.getElementById('preFill');
+  const counterEl = document.getElementById('preCounter');
+  const images = [...document.querySelectorAll('img')];
+  const total = Math.max(images.length, 1);
   let loaded = 0;
-  let displayPct = 0;
-  let targetPct = 0;
-  let finished = false;
-  let rafId;
+  let current = 0;
+  let target = 0;
+  let done = false;
+  const MIN_DURATION = 1800;
+  const startTime = Date.now();
 
-  function animateCounter() {
-    if (displayPct < targetPct) {
-      displayPct += Math.max(1, Math.ceil((targetPct - displayPct) * 0.12));
-      if (displayPct > targetPct) displayPct = targetPct;
-      if (counter) counter.textContent = displayPct;
-      if (fill) fill.style.width = displayPct + '%';
+  function loop() {
+    if (current < target) {
+      current += Math.max(0.5, (target - current) * 0.06);
+      if (current > target) current = target;
+      const val = Math.round(current);
+      if (counterEl) counterEl.textContent = val;
+      if (fillBar) fillBar.style.width = val + '%';
     }
-    if (displayPct < 100 || !finished) {
-      rafId = requestAnimationFrame(animateCounter);
-    }
+    if (!done || current < 100) requestAnimationFrame(loop);
+    else exit();
   }
-  rafId = requestAnimationFrame(animateCounter);
 
   function tick() {
     loaded++;
-    targetPct = Math.min(Math.round((loaded / total) * 100), 100);
-    if (loaded >= total) finish();
+    target = Math.min(Math.round((loaded / total) * 100), 100);
+    if (loaded >= total) complete();
   }
 
-  function finish() {
-    if (finished) return;
-    finished = true;
-    targetPct = 100;
-    const waitForCounter = () => {
-      if (displayPct >= 100) {
-        cancelAnimationFrame(rafId);
-        if (counter) counter.textContent = '100';
-        if (fill) fill.style.width = '100%';
-        setTimeout(() => {
-          preloader?.classList.add('done');
-          document.body.classList.remove('loading');
-          setTimeout(() => preloader?.classList.add('gone'), 900);
-        }, 500);
-      } else {
-        requestAnimationFrame(waitForCounter);
-      }
-    };
-    requestAnimationFrame(waitForCounter);
+  function complete() {
+    if (done) return;
+    done = true;
+    target = 100;
+  }
+
+  function exit() {
+    const elapsed = Date.now() - startTime;
+    const remaining = Math.max(0, MIN_DURATION - elapsed);
+    setTimeout(() => {
+      if (counterEl) counterEl.textContent = '100';
+      if (fillBar) fillBar.style.width = '100%';
+      setTimeout(() => {
+        preloader?.classList.add('exit');
+        document.body.classList.remove('loading');
+        setTimeout(() => preloader?.classList.add('gone'), 1200);
+      }, 300);
+    }, remaining);
   }
 
   images.forEach(img => {
@@ -58,13 +56,9 @@
     else { img.addEventListener('load', tick); img.addEventListener('error', tick); }
   });
 
-  videos.forEach(vid => {
-    if (vid.readyState >= 3) tick();
-    else { vid.addEventListener('canplay', tick, { once: true }); vid.addEventListener('error', tick, { once: true }); }
-  });
-
-  if (total === 0) finish();
-  setTimeout(finish, 8000);
+  if (images.length === 0) { done = true; target = 100; }
+  setTimeout(complete, 4000);
+  requestAnimationFrame(loop);
 })();
 
 // ===== Custom cursor =====
