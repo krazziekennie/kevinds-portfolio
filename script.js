@@ -3,27 +3,54 @@
   document.body.classList.add('loading');
   const preloader = document.getElementById('preloader');
   const fill = document.getElementById('preloaderFill');
-  const statusEl = document.getElementById('preloaderStatus');
+  const counter = document.getElementById('preCounter');
   const videos = document.querySelectorAll('video');
   const images = document.querySelectorAll('img');
   const total = videos.length + images.length;
   let loaded = 0;
+  let displayPct = 0;
+  let targetPct = 0;
+  let finished = false;
+  let rafId;
+
+  function animateCounter() {
+    if (displayPct < targetPct) {
+      displayPct += Math.max(1, Math.ceil((targetPct - displayPct) * 0.12));
+      if (displayPct > targetPct) displayPct = targetPct;
+      if (counter) counter.textContent = displayPct;
+      if (fill) fill.style.width = displayPct + '%';
+    }
+    if (displayPct < 100 || !finished) {
+      rafId = requestAnimationFrame(animateCounter);
+    }
+  }
+  rafId = requestAnimationFrame(animateCounter);
 
   function tick() {
     loaded++;
-    const pct = Math.min(Math.round((loaded / total) * 100), 100);
-    if (fill) fill.style.width = pct + '%';
-    if (statusEl) statusEl.textContent = pct + '%';
+    targetPct = Math.min(Math.round((loaded / total) * 100), 100);
     if (loaded >= total) finish();
   }
 
   function finish() {
-    if (fill) fill.style.width = '100%';
-    if (statusEl) statusEl.textContent = 'Ready';
-    setTimeout(() => {
-      preloader?.classList.add('done');
-      document.body.classList.remove('loading');
-    }, 400);
+    if (finished) return;
+    finished = true;
+    targetPct = 100;
+    const waitForCounter = () => {
+      if (displayPct >= 100) {
+        cancelAnimationFrame(rafId);
+        if (counter) counter.textContent = '100';
+        if (fill) fill.style.width = '100%';
+        setTimeout(() => {
+          preloader?.classList.add('done');
+          document.body.classList.remove('loading');
+          setTimeout(() => preloader?.classList.add('gone'), 900);
+        }, 500);
+      } else {
+        requestAnimationFrame(waitForCounter);
+      }
+    };
+    requestAnimationFrame(waitForCounter);
   }
 
   images.forEach(img => {
@@ -37,7 +64,7 @@
   });
 
   if (total === 0) finish();
-  setTimeout(finish, 6000);
+  setTimeout(finish, 8000);
 })();
 
 // ===== Custom cursor =====

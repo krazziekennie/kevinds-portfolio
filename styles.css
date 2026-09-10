@@ -20,52 +20,167 @@ html { scroll-behavior: smooth; }
   position: fixed; inset: 0; z-index: 10000;
   background: var(--bg);
   display: grid; place-items: center;
-  transition: opacity 0.6s var(--ease), visibility 0.6s;
+  overflow: hidden;
 }
-.preloader.done {
-  opacity: 0; visibility: hidden; pointer-events: none;
+.preloader.done .pre-content { opacity: 0; transform: scale(0.9); filter: blur(8px); }
+.preloader.done .pre-curtain-left { transform: translateX(-100%); }
+.preloader.done .pre-curtain-right { transform: translateX(100%); }
+.preloader.gone { display: none; }
+
+/* Background grid lines */
+.pre-bg-lines {
+  position: absolute; inset: 0;
+  display: flex; justify-content: space-evenly;
+  pointer-events: none;
 }
-.preloader-inner {
-  display: flex; flex-direction: column; align-items: center; gap: 20px;
+.pre-bg-lines span {
+  width: 1px; height: 100%;
+  background: var(--line);
+  opacity: 0;
+  animation: preLineIn 0.8s var(--ease) forwards;
 }
-.preloader-logo {
-  width: 64px; height: 64px;
+.pre-bg-lines span:nth-child(1) { animation-delay: 0.1s; }
+.pre-bg-lines span:nth-child(2) { animation-delay: 0.2s; }
+.pre-bg-lines span:nth-child(3) { animation-delay: 0.3s; }
+.pre-bg-lines span:nth-child(4) { animation-delay: 0.4s; }
+.pre-bg-lines span:nth-child(5) { animation-delay: 0.5s; }
+@keyframes preLineIn { to { opacity: 1; } }
+
+/* Center content */
+.pre-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), filter 0.5s var(--ease);
+}
+
+/* Logo */
+.pre-logo-wrap {
+  position: relative; width: 80px; height: 80px;
+  margin-bottom: 8px;
+}
+.pre-logo-circle {
+  width: 80px; height: 80px;
   background: var(--ink); color: var(--bg);
   border-radius: 50%;
   display: grid; place-items: center;
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 30px;
-  animation: preloaderPulse 1.6s ease-in-out infinite;
+  opacity: 0; transform: scale(0.5);
+  animation: preLogoIn 0.7s var(--ease) 0.3s forwards;
 }
-@keyframes preloaderPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,94,58,0.4); }
-  50% { transform: scale(1.08); box-shadow: 0 0 0 20px rgba(255,94,58,0); }
+.pre-logo-letter {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 36px;
+  line-height: 1;
 }
-.preloader-text {
+.pre-logo-ring {
+  position: absolute; inset: -8px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  animation: preRingSpin 0.8s var(--ease) 0.5s forwards, preRingRotate 4s linear 1.3s infinite;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+@keyframes preLogoIn {
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes preRingSpin {
+  to { opacity: 1; }
+}
+@keyframes preRingRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Brand letters */
+.pre-brand {
+  display: flex; align-items: center; gap: 2px;
+  position: relative;
+}
+.pre-brand-letter {
   font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: 24px; letter-spacing: -0.02em;
-  color: var(--ink); position: relative;
+  font-size: 32px; letter-spacing: 0.06em;
+  color: var(--ink);
+  display: inline-block;
+  opacity: 0; transform: translateY(20px);
+  animation: preBrandIn 0.5s var(--ease) forwards;
 }
-.preloader-dot {
-  width: 6px; height: 6px; border-radius: 50%;
+.pre-brand-letter:nth-child(1) { animation-delay: 0.6s; }
+.pre-brand-letter:nth-child(2) { animation-delay: 0.7s; }
+.pre-brand-letter:nth-child(3) { animation-delay: 0.8s; }
+.pre-brand-dot {
+  width: 7px; height: 7px; border-radius: 50%;
   background: var(--accent);
-  position: absolute; top: 2px; right: -10px;
+  margin-left: 4px; margin-bottom: 14px;
+  opacity: 0; transform: scale(0);
+  animation: preDotPop 0.4s var(--ease) 0.95s forwards;
 }
-.preloader-bar {
-  width: 120px; height: 2px;
+@keyframes preBrandIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes preDotPop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Counter */
+.pre-counter {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(64px, 15vw, 140px);
+  line-height: 1; letter-spacing: -0.04em;
+  background: linear-gradient(180deg, var(--ink) 0%, var(--ink-dim) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+  animation: preCounterIn 0.6s var(--ease) 0.9s forwards;
+}
+@keyframes preCounterIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Tagline */
+.pre-tagline {
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0;
+  animation: preTagIn 0.6s var(--ease) 1.1s forwards;
+}
+.pre-tag-word {
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.pre-tag-divider {
+  color: var(--accent); font-size: 14px;
+}
+@keyframes preTagIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Progress bar */
+.pre-progress {
+  width: min(200px, 50vw); margin-top: 8px;
+  opacity: 0;
+  animation: preTagIn 0.5s var(--ease) 1.2s forwards;
+}
+.pre-progress-track {
+  width: 100%; height: 2px;
   background: var(--ink-faint); border-radius: 2px;
   overflow: hidden;
 }
-.preloader-fill {
+.pre-progress-fill {
   height: 100%; width: 0;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   border-radius: 2px;
-  transition: width 0.3s ease-out;
+  transition: width 0.25s ease-out;
 }
-.preloader-status {
-  font-family: 'Inter', sans-serif; font-size: 11px;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--ink-dim);
+
+/* Curtains */
+.pre-curtain-left, .pre-curtain-right {
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  background: var(--bg); z-index: 3;
+  transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
 }
+.pre-curtain-left { left: 0; transform: translateX(0); }
+.pre-curtain-right { right: 0; transform: translateX(0); }
+
 body.loading { overflow: hidden; }
 
 body {
