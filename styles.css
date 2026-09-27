@@ -1033,4 +1033,29 @@ section { padding: 120px 40px; position: relative; }
   .client-head { gap: 12px; margin-bottom: 20px; }
   .client-banner { gap: 12px; }
   .gallery-nav { position: static; justify-content: flex-end; margin-top: 12px; }
+  .whatsapp-float { bottom: 20px; left: 20px; width: 50px; height: 50px; }
 }
+
+/* ===== WhatsApp floating button ===== */
+.whatsapp-float {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 500;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  text-decoration: none;
+}
+.whatsapp-float:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.5);
+}
+.whatsapp-float svg { flex-shrink: 0; }

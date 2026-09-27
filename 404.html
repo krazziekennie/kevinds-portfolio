@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found | KEVINDS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+      color: #f5f5f5;
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    .container { max-width: 520px; }
+    .code {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(80px, 20vw, 160px);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #ff6b35, #f7c948, #ff6b35);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s ease infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 700;
+      margin: 16px 0 12px;
+    }
+    p {
+      color: #999;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: #f5f5f5;
+      color: #0a0a0a;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 40px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="code">404</div>
+    <h1>This page doesn't exist.</h1>
+    <p>Looks like you followed a broken link or typed something wrong. No worries — let's get you back to the portfolio.</p>
+    <a href="/" class="btn">Back to Home <span>→</span></a>
+  </div>
+</body>
+</html>
