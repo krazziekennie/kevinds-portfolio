@@ -25,12 +25,17 @@ html { scroll-behavior: smooth; }
 }
 .preloader.exit {
   overflow: visible;
-  animation: preExit 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-@keyframes preExit {
-  0% { opacity: 1; transform: scale(1); }
-  40% { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0; transform: scale(8); }
+.preloader.exit::after {
+  content: '';
+  position: absolute; inset: 0; z-index: 10;
+  background: #fff;
+  animation: preFlash 1.2s ease forwards;
+}
+@keyframes preFlash {
+  0% { opacity: 0; }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; pointer-events: none; }
 }
 .preloader.gone { display: none; }
 body.loading { overflow: hidden; }
@@ -188,35 +193,17 @@ body.loading { overflow: hidden; }
 
 /* Exit animations */
 .preloader.exit .pre-content {
-  animation: contentOut 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: contentZoom 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-@keyframes contentOut {
+@keyframes contentZoom {
   0% { opacity: 1; transform: scale(1); }
-  20% { opacity: 1; transform: scale(1.1); }
-  100% { opacity: 0; transform: scale(6); }
-}
-.preloader.exit .pre-logo-mask {
-  animation: logoHeroZoom 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-@keyframes logoHeroZoom {
-  0% { box-shadow: 0 0 0 1px rgba(232,0,0,0.15), 0 8px 40px rgba(232,0,0,0.2), 0 30px 80px rgba(0,0,0,0.6); }
-  30% { box-shadow: 0 0 0 2px rgba(232,0,0,0.4), 0 0 80px rgba(232,0,0,0.6), 0 0 160px rgba(232,0,0,0.3); }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-.preloader.exit .pre-counter-wrap,
-.preloader.exit .pre-top-tag {
-  animation: fadeOut 0.3s ease forwards;
+  25% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(4); }
 }
 .preloader.exit .pre-noise,
 .preloader.exit .pre-vignette,
 .preloader.exit .pre-lines {
-  animation: fadeOut 0.5s ease forwards;
-}
-.preloader.exit .pre-glow-ring {
-  animation: ringBurst 0.6s ease forwards;
-}
-@keyframes ringBurst {
-  to { opacity: 0; transform: rotate(180deg) scale(3); }
+  animation: fadeOut 0.4s ease forwards;
 }
 @keyframes fadeOut { to { opacity: 0; } }
 
