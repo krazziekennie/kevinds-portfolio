@@ -462,26 +462,41 @@ if (form) {
   });
 }
 
-// ===== Music disc — beat player =====
+// ===== Music disc — beat player (autoplay, click to mute) =====
 const musicDisc = document.getElementById('musicDisc');
 if (musicDisc) {
-  let audio, isPlaying = false;
+  const audio = new Audio('assets/beat.mp3');
+  audio.loop = true;
+  audio.volume = 0.4;
+  let isMuted = false;
 
-  musicDisc.addEventListener('click', () => {
-    if (!audio) {
-      audio = new Audio('assets/beat.mp3');
-      audio.loop = true;
-      audio.volume = 0.4;
-    }
-    if (!isPlaying) {
-      audio.play();
+  function startMusic() {
+    audio.play().then(() => {
       musicDisc.classList.add('playing');
-      isPlaying = true;
-    } else {
+    }).catch(() => {});
+  }
+
+  startMusic();
+  document.addEventListener('click', function autoStart() {
+    if (audio.paused) startMusic();
+    document.removeEventListener('click', autoStart);
+  }, { once: true });
+  document.addEventListener('scroll', function autoStartScroll() {
+    if (audio.paused) startMusic();
+    document.removeEventListener('scroll', autoStartScroll);
+  }, { once: true });
+
+  musicDisc.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!isMuted) {
       audio.pause();
       musicDisc.classList.remove('playing');
-      isPlaying = false;
+      isMuted = true;
+    } else {
+      audio.play();
+      musicDisc.classList.add('playing');
+      isMuted = false;
     }
-    try { SFX.click(); } catch(e) {}
+    try { SFX.click(); } catch(e2) {}
   });
 }
