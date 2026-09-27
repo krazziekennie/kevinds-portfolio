@@ -97,7 +97,7 @@ const SFX = (() => {
       current += Math.max(1, (target - current) * 0.18);
       if (current > target) current = target;
       const val = Math.round(current);
-      if (counterEl) counterEl.textContent = val;
+      if (counterEl) counterEl.textContent = val + '%';
       if (fillBar) fillBar.style.width = val + '%';
       if (val > 10 && !whooshPlayed) {
         whooshPlayed = true;
@@ -121,7 +121,7 @@ const SFX = (() => {
   }
 
   function exit() {
-    if (counterEl) counterEl.textContent = '100';
+    if (counterEl) counterEl.textContent = '100%';
     if (fillBar) fillBar.style.width = '100%';
     try { SFX.chime(); } catch(e) {}
     setTimeout(() => {
@@ -130,8 +130,8 @@ const SFX = (() => {
       setTimeout(() => {
         preloader?.classList.add('gone');
         if (window._startBeat) window._startBeat();
-      }, 1000);
-    }, 200);
+      }, 1200);
+    }, 400);
   }
 
   images.forEach(img => {
