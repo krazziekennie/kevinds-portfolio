@@ -461,3 +461,82 @@ if (form) {
     }
   });
 }
+
+// ===== Music disc — ambient lo-fi beat =====
+const musicDisc = document.getElementById('musicDisc');
+if (musicDisc) {
+  let audioCtx, masterGain, isPlaying = false, loopInterval;
+
+  function createAmbient() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.12;
+    masterGain.connect(audioCtx.destination);
+
+    function pad(freq, detune) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      osc.detune.value = detune || 0;
+      filter.type = 'lowpass';
+      filter.frequency.value = 800;
+      filter.Q.value = 1;
+      gain.gain.value = 0.3;
+      osc.connect(filter).connect(gain).connect(masterGain);
+      osc.start();
+      return { osc, gain, filter };
+    }
+
+    const pads = [
+      pad(130.81, 0),
+      pad(164.81, 5),
+      pad(196.00, -3),
+      pad(261.63, 7)
+    ];
+
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.15;
+    lfoGain.gain.value = 100;
+    lfo.connect(lfoGain);
+    pads.forEach(p => lfoGain.connect(p.filter.frequency));
+    lfo.start();
+
+    let chordIndex = 0;
+    const chords = [
+      [130.81, 164.81, 196.00, 261.63],
+      [146.83, 185.00, 220.00, 293.66],
+      [116.54, 146.83, 174.61, 233.08],
+      [130.81, 164.81, 196.00, 261.63]
+    ];
+
+    loopInterval = setInterval(() => {
+      chordIndex = (chordIndex + 1) % chords.length;
+      const chord = chords[chordIndex];
+      const t = audioCtx.currentTime;
+      pads.forEach((p, i) => {
+        p.osc.frequency.setTargetAtTime(chord[i], t, 1.5);
+      });
+    }, 6000);
+
+    return { pads, lfo };
+  }
+
+  musicDisc.addEventListener('click', () => {
+    if (!isPlaying) {
+      if (!audioCtx) createAmbient();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      masterGain.gain.setTargetAtTime(0.12, audioCtx.currentTime, 0.3);
+      musicDisc.classList.add('playing');
+      isPlaying = true;
+    } else {
+      masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
+      musicDisc.classList.remove('playing');
+      isPlaying = false;
+    }
+    try { SFX.click(); } catch(e) {}
+  });
+}

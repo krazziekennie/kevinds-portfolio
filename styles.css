@@ -1059,3 +1059,75 @@ section { padding: 120px 40px; position: relative; }
   box-shadow: 0 6px 28px rgba(37, 211, 102, 0.5);
 }
 .whatsapp-float svg { flex-shrink: 0; }
+
+/* ===== Music disc ===== */
+.music-disc {
+  position: fixed;
+  bottom: 100px;
+  left: 32px;
+  z-index: 500;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: #1a1a1a;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.music-disc:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.disc-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#111 0deg, #222 90deg, #111 180deg, #1a1a1a 270deg, #111 360deg);
+  position: relative;
+  animation: none;
+}
+.music-disc.playing .disc-inner {
+  animation: disc-spin 2s linear infinite;
+}
+@keyframes disc-spin {
+  to { transform: rotate(360deg); }
+}
+.disc-groove {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.06);
+  inset: 6px;
+}
+.disc-groove-2 { inset: 10px; }
+.disc-groove-3 { inset: 14px; }
+.disc-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent, #ff6b35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.disc-label svg { width: 10px; height: 10px; }
+.music-disc.playing .disc-label svg {
+  display: none;
+}
+.music-disc.playing .disc-label::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+@media (max-width: 900px) {
+  .music-disc { bottom: 80px; left: 20px; width: 44px; height: 44px; }
+}
