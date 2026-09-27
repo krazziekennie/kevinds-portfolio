@@ -468,35 +468,42 @@ if (musicDisc) {
   const audio = new Audio('assets/beat.mp3');
   audio.loop = true;
   audio.volume = 0.4;
-  let isMuted = false;
+  audio.preload = 'auto';
+  let userMuted = false;
+  let started = false;
 
-  function startMusic() {
+  function tryPlay() {
+    if (started || userMuted) return;
     audio.play().then(() => {
+      started = true;
       musicDisc.classList.add('playing');
+      cleanup();
     }).catch(() => {});
   }
 
-  startMusic();
-  document.addEventListener('click', function autoStart() {
-    if (audio.paused) startMusic();
-    document.removeEventListener('click', autoStart);
-  }, { once: true });
-  document.addEventListener('scroll', function autoStartScroll() {
-    if (audio.paused) startMusic();
-    document.removeEventListener('scroll', autoStartScroll);
-  }, { once: true });
+  function cleanup() {
+    ['click','touchstart','scroll','keydown','mousemove'].forEach(evt => {
+      document.removeEventListener(evt, tryPlay, true);
+    });
+  }
 
-  musicDisc.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (!isMuted) {
+  tryPlay();
+  ['click','touchstart','scroll','keydown','mousemove'].forEach(evt => {
+    document.addEventListener(evt, tryPlay, { capture: true, passive: true });
+  });
+
+  musicDisc.addEventListener('click', () => {
+    if (!userMuted) {
       audio.pause();
       musicDisc.classList.remove('playing');
-      isMuted = true;
+      userMuted = true;
     } else {
-      audio.play();
-      musicDisc.classList.add('playing');
-      isMuted = false;
+      audio.play().then(() => {
+        musicDisc.classList.add('playing');
+      });
+      userMuted = false;
+      started = true;
     }
-    try { SFX.click(); } catch(e2) {}
+    try { SFX.click(); } catch(e) {}
   });
 }
