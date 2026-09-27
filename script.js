@@ -125,7 +125,10 @@ const SFX = (() => {
     setTimeout(() => {
       preloader?.classList.add('exit');
       document.body.classList.remove('loading');
-      setTimeout(() => preloader?.classList.add('gone'), 1000);
+      setTimeout(() => {
+        preloader?.classList.add('gone');
+        if (window._startBeat) window._startBeat();
+      }, 1000);
     }, 200);
   }
 
@@ -462,7 +465,7 @@ if (form) {
   });
 }
 
-// ===== Music disc — beat player (autoplay, click to mute) =====
+// ===== Music disc — beat player (plays after preloader, click to mute) =====
 const musicDisc = document.getElementById('musicDisc');
 if (musicDisc) {
   const audio = new Audio('assets/beat.mp3');
@@ -470,27 +473,13 @@ if (musicDisc) {
   audio.volume = 0.4;
   audio.preload = 'auto';
   let userMuted = false;
-  let started = false;
 
-  function tryPlay() {
-    if (started || userMuted) return;
+  window._startBeat = function () {
+    if (userMuted) return;
     audio.play().then(() => {
-      started = true;
       musicDisc.classList.add('playing');
-      cleanup();
     }).catch(() => {});
-  }
-
-  function cleanup() {
-    ['click','touchstart','scroll','keydown','mousemove'].forEach(evt => {
-      document.removeEventListener(evt, tryPlay, true);
-    });
-  }
-
-  tryPlay();
-  ['click','touchstart','scroll','keydown','mousemove'].forEach(evt => {
-    document.addEventListener(evt, tryPlay, { capture: true, passive: true });
-  });
+  };
 
   musicDisc.addEventListener('click', () => {
     if (!userMuted) {
@@ -502,7 +491,6 @@ if (musicDisc) {
         musicDisc.classList.add('playing');
       });
       userMuted = false;
-      started = true;
     }
     try { SFX.click(); } catch(e) {}
   });
