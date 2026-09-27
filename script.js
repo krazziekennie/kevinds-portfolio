@@ -130,8 +130,8 @@ const SFX = (() => {
       setTimeout(() => {
         preloader?.classList.add('gone');
         if (window._startBeat) window._startBeat();
-      }, 1400);
-    }, 400);
+      }, 1200);
+    }, 300);
   }
 
   images.forEach(img => {
