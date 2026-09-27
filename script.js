@@ -89,6 +89,8 @@ const SFX = (() => {
   let target = 0;
   let done = false;
   let whooshPlayed = false;
+  let canExit = false;
+  setTimeout(() => { canExit = true; }, 2000);
 
   function loop() {
     if (current < target) {
@@ -102,7 +104,7 @@ const SFX = (() => {
         try { SFX.whoosh(2); } catch(e) {}
       }
     }
-    if (!done || current < 100) requestAnimationFrame(loop);
+    if (!done || current < 100 || !canExit) requestAnimationFrame(loop);
     else exit();
   }
 
