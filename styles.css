@@ -44,8 +44,8 @@ body.loading { overflow: hidden; }
   animation: lineGrow 0.4s ease 0.1s forwards, lineDown 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
 }
 @keyframes lineGrow { to { transform: scaleX(1); } }
-@keyframes lineUp { to { transform: scaleX(1) translateY(-150px); } }
-@keyframes lineDown { to { transform: scaleX(1) translateY(150px); } }
+@keyframes lineUp { to { transform: scaleX(1) translateY(-190px); } }
+@keyframes lineDown { to { transform: scaleX(1) translateY(190px); } }
 
 /* Content */
 .pre-content {
