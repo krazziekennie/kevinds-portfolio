@@ -130,7 +130,7 @@ const SFX = (() => {
       setTimeout(() => {
         preloader?.classList.add('gone');
         if (window._startBeat) window._startBeat();
-      }, 1200);
+      }, 1600);
     }, 400);
   }
 
